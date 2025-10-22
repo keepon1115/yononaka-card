@@ -1,0 +1,8 @@
+* { box-sizing: border-box; }
+html, body, #__next { height: 100%; }
+button { cursor: pointer; }
+input, button, select, textarea { font: inherit; }
+a { color: #93c5fd; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+
