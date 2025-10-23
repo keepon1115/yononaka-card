@@ -1,8 +1,10 @@
 "use client";
 import { useEffect, useMemo, useState } from 'react';
-import { supabase } from '@/lib/supabaseClient';
+import { getSupabase } from '@/lib/supabaseClient';
 import { ensureAnonymousSignIn } from '@/lib/auth';
 import { subscribeToGame, subscribeToTable } from '@/lib/realtime';
+
+export const dynamic = 'force-dynamic';
 
 type Game = { id: string; code: string; round: number; phase: string; genre: string | null; presenter_id: string | null };
 
@@ -19,6 +21,7 @@ export default function HostPage() {
     setLoading(true);
     try {
       const code = Math.random().toString(36).slice(2, 6).toUpperCase();
+      const supabase = getSupabase();
       const { data: gameRes, error } = await supabase.from('games').insert({ code }).select('*').single();
       if (error) throw error;
 

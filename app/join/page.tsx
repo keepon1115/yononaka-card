@@ -1,7 +1,9 @@
 "use client";
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabaseClient';
+import { getSupabase } from '@/lib/supabaseClient';
 import { ensureAnonymousSignIn } from '@/lib/auth';
+
+export const dynamic = 'force-dynamic';
 
 export default function JoinPage() {
   const [code, setCode] = useState('');
@@ -14,6 +16,7 @@ export default function JoinPage() {
 
   async function join() {
     setMessage('');
+    const supabase = getSupabase();
     const { data: game } = await supabase.from('games').select('id, code').eq('code', code.toUpperCase()).single();
     if (!game) { setMessage('ルームが見つかりません'); return; }
     const { data: me } = await supabase.auth.getUser();

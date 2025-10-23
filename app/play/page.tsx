@@ -1,9 +1,11 @@
 "use client";
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
+import { getSupabase } from '@/lib/supabaseClient';
 import { ensureAnonymousSignIn } from '@/lib/auth';
 import { subscribeToGame, subscribeToTable } from '@/lib/realtime';
+
+export const dynamic = 'force-dynamic';
 
 export default function PlayPage() {
   const params = useSearchParams();
@@ -21,6 +23,7 @@ export default function PlayPage() {
   useEffect(() => {
     if (!gameId) return;
     (async () => {
+      const supabase = getSupabase();
       const { data: g } = await supabase.from('games').select('*').eq('id', gameId).single();
       setGame(g);
       const { data: auth } = await supabase.auth.getUser();
@@ -42,27 +45,32 @@ export default function PlayPage() {
 
   async function refreshPlayers() {
     if (!gameId) return;
+    const supabase = getSupabase();
     const { data } = await supabase.from('players').select('*').eq('game_id', gameId).order('joined_at');
     setPlayers(data ?? []);
   }
   async function refreshAnswers() {
     if (!gameId) return;
+    const supabase = getSupabase();
     const { data } = await supabase.from('answers').select('*').eq('game_id', gameId).order('created_at');
     setAnswers(data ?? []);
   }
   async function refreshNotes() {
     if (!gameId) return;
+    const supabase = getSupabase();
     const { data } = await supabase.from('notes').select('*').eq('game_id', gameId).order('created_at');
     setNotes(data ?? []);
   }
 
   async function submitAnswer() {
     if (!me || !game) return;
+    const supabase = getSupabase();
     await supabase.from('answers').insert({ game_id: game.id, player_id: me.id, round: game.round, text });
     setText('');
   }
   async function submitNote() {
     if (!me || !game) return;
+    const supabase = getSupabase();
     await supabase.from('notes').insert({ game_id: game.id, player_id: me.id, round: game.round, message: note });
     setNote('');
   }
