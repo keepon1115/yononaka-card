@@ -9,7 +9,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#111827" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="theme-color" content="#ff8a3d" />
       </head>
       <body style={{ fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, Noto Sans JP, sans-serif', background: 'var(--bg)', color: 'var(--text)' }}>
         <header style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
