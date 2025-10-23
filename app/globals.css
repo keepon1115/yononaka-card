@@ -2,7 +2,19 @@
 html, body, #__next { height: 100%; }
 button { cursor: pointer; }
 input, button, select, textarea { font: inherit; }
-a { color: #93c5fd; text-decoration: none; }
-a:hover { text-decoration: underline; }
+a { color: inherit; text-decoration: none; }
+a:hover { opacity: .9; }
+
+:root {
+  --bg: #fffaf5;
+  --surface: #fff7ee;
+  --border: #ffd7b3;
+  --text: #3a2a1e;
+  --text-strong: #1e140d;
+  --primary: #ff8a3d; /* オレンジベース */
+  --primary-100: #ffe2c7;
+  --primary-200: #ffd0a8;
+  --accent: #ffd64d; /* 黄色アクセント */
+}
 
 

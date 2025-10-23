@@ -1,7 +1,7 @@
 "use client";
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { getSupabase } from '@/lib/supabaseClient';
+import { getSupabase, hasSupabaseEnv } from '@/lib/supabaseClient';
 import { ensureAnonymousSignIn } from '@/lib/auth';
 import { subscribeToGame, subscribeToTable } from '@/lib/realtime';
 
@@ -29,7 +29,7 @@ function PlayPageInner() {
   useEffect(() => { ensureAnonymousSignIn(); }, []);
 
   useEffect(() => {
-    if (!gameId) return;
+    if (!gameId || !hasSupabaseEnv()) return;
     (async () => {
       const supabase = getSupabase();
       const { data: g } = await supabase.from('games').select('*').eq('id', gameId).single();
@@ -95,20 +95,21 @@ function PlayPageInner() {
     }
   }
 
+  if (!hasSupabaseEnv()) return <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)', color: '#b91c1c' }}>環境変数 NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY が未設定です。</div>;
   if (!game) return <div>読み込み中...</div>;
 
   return (
     <div style={{ display: 'grid', gap: 16 }}>
       <h2>プレイヤー画面</h2>
-      <div>フェーズ: <strong>{game.phase}</strong> / ラウンド: {game.round}</div>
+      <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)' }}>フェーズ: <strong>{game.phase}</strong> / ラウンド: {game.round}</div>
       {game.phase === 'genre' && (
         <div>ジャンルが決定します。待機中...</div>
       )}
       {game.phase === 'answer' && (
         <div style={{ display: 'grid', gap: 8 }}>
           <div>ジャンル: <strong>{game.genre ?? '-'}</strong></div>
-          <input value={text} onChange={(e) => setText(e.target.value)} placeholder={`${game.genre ?? 'お題'} に沿った具体語`} />
-          <button onClick={submitAnswer} disabled={!text}>送信</button>
+          <input value={text} onChange={(e) => setText(e.target.value)} placeholder={`${game.genre ?? 'お題'} に沿った具体語`} style={{ padding: '10px 12px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text)' }} />
+          <button onClick={submitAnswer} disabled={!text} style={{ padding: '10px 14px', borderRadius: 12, background: 'var(--primary)', color: 'white', border: '1px solid var(--border)' }}>送信</button>
         </div>
       )}
       {game.phase === 'present' && (
@@ -119,12 +120,12 @@ function PlayPageInner() {
           <div>リアクションを選択して相手に渡す：</div>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {players.filter(p => p.id !== me?.id).map((p) => (
-              <div key={p.id} style={{ border: '1px solid #334155', borderRadius: 8, padding: 8 }}>
+              <div key={p.id} style={{ border: '1px solid var(--border)', borderRadius: 12, padding: 8, background: 'var(--surface)' }}>
                 <div>{p.name}</div>
                 <div style={{ display: 'flex', gap: 6 }}>
-                  <button onClick={() => sendReaction('unique', p.id)}>ユニーク</button>
-                  <button onClick={() => sendReaction('practical', p.id)}>実用的</button>
-                  <button onClick={() => sendReaction('surprise', p.id)}>サプライズ</button>
+                  <button onClick={() => sendReaction('unique', p.id)} style={{ padding: '6px 10px', borderRadius: 12, background: 'var(--surface)', border: '1px solid var(--border)' }}>ユニーク</button>
+                  <button onClick={() => sendReaction('practical', p.id)} style={{ padding: '6px 10px', borderRadius: 12, background: 'var(--surface)', border: '1px solid var(--border)' }}>実用的</button>
+                  <button onClick={() => sendReaction('surprise', p.id)} style={{ padding: '6px 10px', borderRadius: 12, background: 'var(--accent)', border: '1px solid var(--border)' }}>サプライズ</button>
                 </div>
               </div>
             ))}
@@ -134,8 +135,8 @@ function PlayPageInner() {
       <section>
         <h3>自分のメモ</h3>
         <div style={{ display: 'flex', gap: 8 }}>
-          <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="質問・メモ" />
-          <button onClick={submitNote} disabled={!note}>投稿</button>
+          <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="質問・メモ" style={{ padding: '10px 12px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text)' }} />
+          <button onClick={submitNote} disabled={!note} style={{ padding: '10px 14px', borderRadius: 12, background: 'var(--primary)', color: 'white', border: '1px solid var(--border)' }}>投稿</button>
         </div>
       </section>
       <section>

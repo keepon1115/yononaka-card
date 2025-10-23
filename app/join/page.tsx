@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
-import { getSupabase } from '@/lib/supabaseClient';
+import { getSupabase, hasSupabaseEnv } from '@/lib/supabaseClient';
 import { ensureAnonymousSignIn } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
@@ -27,11 +27,20 @@ export default function JoinPage() {
 
   return (
     <div style={{ display: 'grid', gap: 12, maxWidth: 360 }}>
-      <h2>ルーム参加</h2>
-      <label>コード<input value={code} onChange={(e) => setCode(e.target.value)} placeholder="ABCD" style={{ width: '100%' }} /></label>
-      <label>名前<input value={name} onChange={(e) => setName(e.target.value)} placeholder="あなたの名前" style={{ width: '100%' }} /></label>
-      <button onClick={join} disabled={!code || !name} style={{ padding: '8px 12px' }}>参加</button>
-      {message && <div style={{ color: '#fca5a5' }}>{message}</div>}
+      <h2>参加者</h2>
+      {!hasSupabaseEnv() && (
+        <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)', color: '#b91c1c' }}>
+          環境変数 NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY が未設定です。
+        </div>
+      )}
+      <label>コード
+        <input value={code} onChange={(e) => setCode(e.target.value)} placeholder="ABCD" style={{ width: '100%', padding: '10px 12px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text)' }} />
+      </label>
+      <label>名前
+        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="あなたの名前" style={{ width: '100%', padding: '10px 12px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text)' }} />
+      </label>
+      <button onClick={join} disabled={!code || !name || !hasSupabaseEnv()} style={{ padding: '12px 16px', borderRadius: 12, background: 'var(--primary)', color: 'white', border: '1px solid var(--border)', opacity: (!hasSupabaseEnv() ? .6 : 1) }}>参加する</button>
+      {message && <div style={{ color: '#b91c1c' }}>{message}</div>}
     </div>
   );
 }

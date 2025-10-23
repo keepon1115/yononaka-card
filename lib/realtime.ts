@@ -1,6 +1,9 @@
-import { getSupabase } from './supabaseClient';
+import { getSupabase, hasSupabaseEnv } from './supabaseClient';
 
 export function subscribeToGame(gameId: string, onChange: (payload: any) => void) {
+  if (!hasSupabaseEnv()) {
+    return () => {};
+  }
   const supabase = getSupabase();
   const channel = supabase
     .channel(`games:${gameId}`)
@@ -16,6 +19,9 @@ export function subscribeToTable(
   filters: { game_id: string; round?: number },
   onChange: (payload: any) => void
 ) {
+  if (!hasSupabaseEnv()) {
+    return () => {};
+  }
   const supabase = getSupabase();
   const parts = [`game_id=eq.${filters.game_id}`];
   if (typeof filters.round === 'number') parts.push(`round=eq.${filters.round}`);

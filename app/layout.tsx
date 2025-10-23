@@ -11,12 +11,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#111827" />
       </head>
-      <body style={{ fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, Noto Sans JP, sans-serif', background: '#0f172a', color: '#f8fafc' }}>
-        <header style={{ padding: '12px 16px', borderBottom: '1px solid #1f2937' }}>
+      <body style={{ fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, Noto Sans JP, sans-serif', background: 'var(--bg)', color: 'var(--text)' }}>
+        <header style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
           <nav style={{ display: 'flex', gap: 16 }}>
-            <Link href="/join">参加</Link>
-            <Link href="/host">司会</Link>
-            <Link href="/play">プレイ</Link>
+            <Link href="/join">参加者</Link>
+            <Link href="/host">ホスト</Link>
           </nav>
         </header>
         <main style={{ maxWidth: 960, margin: '0 auto', padding: 16 }}>{children}</main>

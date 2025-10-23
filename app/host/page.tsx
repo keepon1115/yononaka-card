@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from 'react';
-import { getSupabase } from '@/lib/supabaseClient';
+import { getSupabase, hasSupabaseEnv } from '@/lib/supabaseClient';
 import { ensureAnonymousSignIn } from '@/lib/auth';
 import { subscribeToGame, subscribeToTable } from '@/lib/realtime';
 
@@ -66,14 +66,19 @@ export default function HostPage() {
   return (
     <div style={{ display: 'grid', gap: 16 }}>
       <h2>司会画面</h2>
+      {!hasSupabaseEnv() && (
+        <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)', color: '#b91c1c' }}>
+          環境変数 NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY が未設定です。
+        </div>
+      )}
       {!game ? (
-        <button onClick={createRoom} disabled={loading} style={{ padding: '8px 12px' }}>ルーム作成</button>
+        <button onClick={createRoom} disabled={loading || !hasSupabaseEnv()} style={{ padding: '12px 16px', borderRadius: 12, background: 'var(--primary)', color: 'white', border: '1px solid var(--border)', opacity: (!hasSupabaseEnv() ? .6 : 1) }}>ルームを作成</button>
       ) : (
         <div style={{ display: 'grid', gap: 12 }}>
           <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-            <div>コード: <strong>{game.code}</strong></div>
-            <div>フェーズ: <strong>{game.phase}</strong></div>
-            <div>ジャンル: <strong>{game.genre ?? '-'}</strong></div>
+            <div style={{ padding: '8px 10px', background: 'var(--primary-100)', borderRadius: 12, border: '1px solid var(--border)' }}>コード: <strong>{game.code}</strong></div>
+            <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)' }}>フェーズ: <strong>{game.phase}</strong></div>
+            <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)' }}>ジャンル: <strong>{game.genre ?? '-'}</strong></div>
           </div>
           <div>
             <h3>参加者</h3>
@@ -84,11 +89,11 @@ export default function HostPage() {
             </ul>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            <button onClick={() => setPhase('genre')}>お題決定へ</button>
-            <button onClick={spinGenre}>ジャンル・ルーレット</button>
-            <button onClick={() => setPhase('present')}>発表へ</button>
-            <button onClick={() => setPhase('reaction')}>リアクションへ</button>
-            <button onClick={() => setPhase('result')}>結果</button>
+            <button onClick={() => setPhase('genre')} style={{ padding: '8px 12px', borderRadius: 12, background: 'var(--surface)', border: '1px solid var(--border)' }}>お題決定へ</button>
+            <button onClick={spinGenre} style={{ padding: '8px 12px', borderRadius: 12, background: 'var(--accent)', border: '1px solid var(--border)' }}>ジャンル・ルーレット</button>
+            <button onClick={() => setPhase('present')} style={{ padding: '8px 12px', borderRadius: 12, background: 'var(--surface)', border: '1px solid var(--border)' }}>発表へ</button>
+            <button onClick={() => setPhase('reaction')} style={{ padding: '8px 12px', borderRadius: 12, background: 'var(--surface)', border: '1px solid var(--border)' }}>リアクションへ</button>
+            <button onClick={() => setPhase('result')} style={{ padding: '8px 12px', borderRadius: 12, background: 'var(--surface)', border: '1px solid var(--border)' }}>結果</button>
           </div>
         </div>
       )}
