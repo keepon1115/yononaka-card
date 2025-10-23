@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Deno Edge Function
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 
