@@ -44,12 +44,14 @@ export default function HostPage() {
   }
 
   async function fetchPlayers(gameId: string) {
+    const supabase = getSupabase();
     const { data } = await supabase.from('players').select('*').eq('game_id', gameId).order('joined_at');
     setPlayers(data ?? []);
   }
 
   async function setPhase(phase: string) {
     if (!game) return;
+    const supabase = getSupabase();
     await supabase.from('games').update({ phase }).eq('id', game.id);
   }
 
@@ -57,6 +59,7 @@ export default function HostPage() {
     if (!game) return;
     const genres = ['感情', '季節', '食べ物', '道具', '生き物', '場所', 'スポーツ'];
     const genre = genres[Math.floor(Math.random() * genres.length)];
+    const supabase = getSupabase();
     await supabase.from('games').update({ genre, phase: 'answer' }).eq('id', game.id);
   }
 
