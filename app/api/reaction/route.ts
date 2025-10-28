@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 export async function POST(req: NextRequest) {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return NextResponse.json({ error: 'Supabase env not set' }, { status: 500 });
+  }
   const body = await req.json();
   const { gameId, round, fromPlayerId, toPlayerId, kind } = body as {
     gameId: string; round: number; fromPlayerId: string; toPlayerId: string; kind: 'unique'|'practical'|'surprise'

@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import './globals.css';
-import Link from 'next/link';
 import PWARegister from '../components/PWARegister';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -10,16 +9,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <meta name="theme-color" content="#ff8a3d" />
+        <meta name="theme-color" content="#9810fa" />
+        {/* Expose public envs via meta to avoid HMR/env mismatch on client */}
+        <meta name="x-supabase-url" content={process.env.NEXT_PUBLIC_SUPABASE_URL || ''} />
+        <meta name="x-supabase-anon-key" content={process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''} />
       </head>
-      <body style={{ fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, Noto Sans JP, sans-serif', background: 'var(--bg)', color: 'var(--text)' }}>
-        <header style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
-          <nav style={{ display: 'flex', gap: 16 }}>
-            <Link href="/join">参加者</Link>
-            <Link href="/host">ホスト</Link>
-          </nav>
-        </header>
-        <main style={{ maxWidth: 960, margin: '0 auto', padding: 16 }}>{children}</main>
+      <body>
+        <main>{children}</main>
         <PWARegister />
       </body>
     </html>

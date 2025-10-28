@@ -1,0 +1,212 @@
+/*!*************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[12].use[3]!./app/globals.css ***!
+  \*************************************************************************************************************************************************************************************************************************************************************/
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body, #__next { height: 100%; }
+body { 
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans JP', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+button { cursor: pointer; }
+input, button, select, textarea { font: inherit; }
+a { color: inherit; text-decoration: none; }
+a:hover { opacity: .9; }
+ul { list-style: none; }
+
+:root {
+  --bg: #fffaf5;
+  --surface: #fff7ee;
+  --border: #ffd7b3;
+  --text: #3a2a1e;
+  --text-strong: #1e140d;
+  --primary: #ff8a3d;
+  --primary-100: #ffe2c7;
+  --primary-200: #ffd0a8;
+  --accent: #ffd64d;
+  --gradient-bg: linear-gradient(148.16deg, rgba(152, 16, 250, 1) 0%, rgba(246, 51, 154, 1) 50%, rgba(255, 105, 0, 1) 100%);
+  --card-bg: rgba(255, 255, 255, 0.95);
+  --card-border: rgba(0, 0, 0, 0.1);
+  --shadow-sm: 0px 10px 15px -3px rgba(0, 0, 0, 0.1), 0px 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --text-secondary: #4a5565;
+  --text-tertiary: #6a7282;
+  --text-muted: #364153;
+}
+
+/* グラデーション背景 */
+.gradient-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-bg);
+  padding: 20px;
+}
+
+/* カードコンテナ */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 33px;
+  max-width: 448px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* アイコンコンテナ */
+.icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  background: linear-gradient(135deg, #ff8a3d 0%, #ffd64d 100%);
+  margin: 0 auto;
+}
+
+.icon-container img {
+  width: 40px;
+  height: 40px;
+}
+
+/* ヘッダーセクション */
+.header-section {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.header-section h1 {
+  font-size: 30px;
+  line-height: 36px;
+  color: #171717;
+  font-weight: 400;
+  margin: 16px 0 0;
+}
+
+.header-section .subtitle {
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--text-secondary);
+  margin: 8px 0 0;
+}
+
+.header-section .description {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--text-tertiary);
+  margin: 8px 0 0;
+}
+
+/* ボタンスタイル */
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 56px;
+  padding: 0 20px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #9810fa 0%, #e60076 100%);
+  color: white;
+  font-size: 14px;
+  border: none;
+  box-shadow: var(--shadow-sm);
+  transition: opacity 0.2s;
+}
+
+.btn-primary:hover { opacity: 0.9; }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btn-primary img {
+  width: 20px;
+  height: 20px;
+}
+
+.btn-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 56px;
+  padding: 0 20px;
+  border-radius: 8px;
+  background: white;
+  color: #171717;
+  font-size: 14px;
+  border: 2px solid #dab2ff;
+  transition: opacity 0.2s;
+}
+
+.btn-secondary:hover { opacity: 0.9; }
+
+.btn-secondary img {
+  width: 20px;
+  height: 20px;
+}
+
+/* インプットスタイル */
+.input-field {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--card-border);
+  background: white;
+  font-size: 14px;
+  color: #171717;
+}
+
+.input-field::placeholder {
+  color: #9ca3af;
+}
+
+/* セクション */
+.section {
+  padding-top: 25px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section h3 {
+  font-size: 14px;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+/* リスト */
+.info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-list-item {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 16px;
+}
+
+.info-list-item .number {
+  flex-shrink: 0;
+}
+
+/* フッター */
+.footer-text {
+  text-align: center;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 16px;
+}
+
+
+

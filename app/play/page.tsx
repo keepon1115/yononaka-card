@@ -31,6 +31,7 @@ function PlayPageInner() {
   useEffect(() => {
     if (!gameId || !hasSupabaseEnv()) return;
     (async () => {
+      if (!hasSupabaseEnv()) return;
       const supabase = getSupabase();
       const { data: g } = await supabase.from('games').select('*').eq('id', gameId).single();
       setGame(g);
@@ -53,18 +54,21 @@ function PlayPageInner() {
 
   async function refreshPlayers() {
     if (!gameId) return;
+    if (!hasSupabaseEnv()) return;
     const supabase = getSupabase();
     const { data } = await supabase.from('players').select('*').eq('game_id', gameId).order('joined_at');
     setPlayers(data ?? []);
   }
   async function refreshAnswers() {
     if (!gameId) return;
+    if (!hasSupabaseEnv()) return;
     const supabase = getSupabase();
     const { data } = await supabase.from('answers').select('*').eq('game_id', gameId).order('created_at');
     setAnswers(data ?? []);
   }
   async function refreshNotes() {
     if (!gameId) return;
+    if (!hasSupabaseEnv()) return;
     const supabase = getSupabase();
     const { data } = await supabase.from('notes').select('*').eq('game_id', gameId).order('created_at');
     setNotes(data ?? []);
@@ -72,12 +76,14 @@ function PlayPageInner() {
 
   async function submitAnswer() {
     if (!me || !game) return;
+    if (!hasSupabaseEnv()) return;
     const supabase = getSupabase();
     await supabase.from('answers').insert({ game_id: game.id, player_id: me.id, round: game.round, text });
     setText('');
   }
   async function submitNote() {
     if (!me || !game) return;
+    if (!hasSupabaseEnv()) return;
     const supabase = getSupabase();
     await supabase.from('notes').insert({ game_id: game.id, player_id: me.id, round: game.round, message: note });
     setNote('');
@@ -95,62 +101,173 @@ function PlayPageInner() {
     }
   }
 
-  if (!hasSupabaseEnv()) return <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)', color: '#b91c1c' }}>環境変数 NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY が未設定です。</div>;
-  if (!game) return <div>読み込み中...</div>;
-
-  return (
-    <div style={{ display: 'grid', gap: 16 }}>
-      <h2>プレイヤー画面</h2>
-      <div style={{ padding: '8px 10px', background: 'var(--surface)', borderRadius: 12, border: '1px solid var(--border)' }}>フェーズ: <strong>{game.phase}</strong> / ラウンド: {game.round}</div>
-      {game.phase === 'genre' && (
-        <div>ジャンルが決定します。待機中...</div>
-      )}
-      {game.phase === 'answer' && (
-        <div style={{ display: 'grid', gap: 8 }}>
-          <div>ジャンル: <strong>{game.genre ?? '-'}</strong></div>
-          <input value={text} onChange={(e) => setText(e.target.value)} placeholder={`${game.genre ?? 'お題'} に沿った具体語`} style={{ padding: '10px 12px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text)' }} />
-          <button onClick={submitAnswer} disabled={!text} style={{ padding: '10px 14px', borderRadius: 12, background: 'var(--primary)', color: 'white', border: '1px solid var(--border)' }}>送信</button>
-        </div>
-      )}
-      {game.phase === 'present' && (
-        <div>発表フェーズ。順番を待機。</div>
-      )}
-      {game.phase === 'reaction' && (
-        <div style={{ display: 'grid', gap: 8 }}>
-          <div>リアクションを選択して相手に渡す：</div>
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-            {players.filter(p => p.id !== me?.id).map((p) => (
-              <div key={p.id} style={{ border: '1px solid var(--border)', borderRadius: 12, padding: 8, background: 'var(--surface)' }}>
-                <div>{p.name}</div>
-                <div style={{ display: 'flex', gap: 6 }}>
-                  <button onClick={() => sendReaction('unique', p.id)} style={{ padding: '6px 10px', borderRadius: 12, background: 'var(--surface)', border: '1px solid var(--border)' }}>ユニーク</button>
-                  <button onClick={() => sendReaction('practical', p.id)} style={{ padding: '6px 10px', borderRadius: 12, background: 'var(--surface)', border: '1px solid var(--border)' }}>実用的</button>
-                  <button onClick={() => sendReaction('surprise', p.id)} style={{ padding: '6px 10px', borderRadius: 12, background: 'var(--accent)', border: '1px solid var(--border)' }}>サプライズ</button>
-                </div>
-              </div>
-            ))}
+  if (!hasSupabaseEnv()) {
+    return (
+      <div className="gradient-container">
+        <div style={{ maxWidth: 448, width: '100%' }}>
+          <div className="card">
+            <div style={{ padding: '12px 14px', background: '#fee2e2', borderRadius: 8, border: '1px solid #fecaca', color: '#b91c1c', fontSize: 14 }}>
+              環境変数 NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY が未設定です。
+            </div>
           </div>
         </div>
-      )}
-      <section>
-        <h3>自分のメモ</h3>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="質問・メモ" style={{ padding: '10px 12px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text)' }} />
-          <button onClick={submitNote} disabled={!note} style={{ padding: '10px 14px', borderRadius: 12, background: 'var(--primary)', color: 'white', border: '1px solid var(--border)' }}>投稿</button>
+      </div>
+    );
+  }
+
+  if (!game) {
+    return (
+      <div className="gradient-container">
+        <div style={{ maxWidth: 448, width: '100%' }}>
+          <div className="card">
+            <div className="header-section">
+              <p className="subtitle">読み込み中...</p>
+            </div>
+          </div>
         </div>
-      </section>
-      <section>
-        <h3>みんなの回答</h3>
-        <ul>
-          {answers.map((a) => (<li key={a.id}>{a.text}</li>))}
-        </ul>
-      </section>
-      <section>
-        <h3>メモ</h3>
-        <ul>
-          {notes.map((n) => (<li key={n.id}>{n.message}</li>))}
-        </ul>
-      </section>
+      </div>
+    );
+  }
+
+  return (
+    <div className="gradient-container">
+      <div style={{ maxWidth: 600, width: '100%', display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div className="card" style={{ maxWidth: '100%' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            {/* ヘッダー */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <h2 style={{ fontSize: 20, margin: 0, color: '#171717' }}>プレイヤー画面</h2>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+                <div style={{ padding: '6px 12px', background: 'white', borderRadius: 8, border: '1px solid var(--card-border)', fontSize: 13 }}>
+                  フェーズ: <strong>{game.phase}</strong>
+                </div>
+                <div style={{ padding: '6px 12px', background: 'white', borderRadius: 8, border: '1px solid var(--card-border)', fontSize: 13 }}>
+                  ラウンド: <strong>{game.round}</strong>
+                </div>
+                {game.genre && (
+                  <div style={{ padding: '6px 12px', background: '#fef3c7', borderRadius: 8, border: '1px solid #fde68a', fontSize: 13 }}>
+                    ジャンル: <strong>{game.genre}</strong>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* フェーズごとのコンテンツ */}
+            {game.phase === 'genre' && (
+              <div style={{ padding: '16px', background: '#f3f4f6', borderRadius: 8, textAlign: 'center' }}>
+                <p style={{ margin: 0, fontSize: 14, color: 'var(--text-secondary)' }}>🎲 ジャンルが決定します。待機中...</p>
+              </div>
+            )}
+
+            {game.phase === 'answer' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '16px', background: '#f0fdf4', borderRadius: 8, border: '1px solid #bbf7d0' }}>
+                <h3 style={{ fontSize: 16, margin: 0, color: 'var(--text-muted)' }}>✍️ あなたの答えを入力</h3>
+                <input 
+                  value={text} 
+                  onChange={(e) => setText(e.target.value)} 
+                  placeholder={`${game.genre ?? 'お題'} に沿った具体語を入力`} 
+                  className="input-field"
+                />
+                <button 
+                  onClick={submitAnswer} 
+                  disabled={!text} 
+                  className="btn-primary"
+                >
+                  送信
+                </button>
+              </div>
+            )}
+
+            {game.phase === 'present' && (
+              <div style={{ padding: '16px', background: '#fef3c7', borderRadius: 8, border: '1px solid #fde68a', textAlign: 'center' }}>
+                <p style={{ margin: 0, fontSize: 14, color: 'var(--text-secondary)' }}>🎤 発表フェーズ。順番を待機中...</p>
+              </div>
+            )}
+
+            {game.phase === 'reaction' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <h3 style={{ fontSize: 16, margin: 0, color: 'var(--text-muted)' }}>🎁 リアクションを選択して相手に渡す</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {players.filter(p => p.id !== me?.id).map((p) => (
+                    <div key={p.id} style={{ padding: '12px', background: 'white', borderRadius: 8, border: '1px solid var(--card-border)' }}>
+                      <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 600 }}>{p.name}</div>
+                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                        <button 
+                          onClick={() => sendReaction('unique', p.id)} 
+                          style={{ padding: '8px 12px', borderRadius: 6, background: '#dbeafe', border: '1px solid #93c5fd', fontSize: 12, color: '#1e40af', fontWeight: 500 }}
+                        >
+                          ✨ ユニーク
+                        </button>
+                        <button 
+                          onClick={() => sendReaction('practical', p.id)} 
+                          style={{ padding: '8px 12px', borderRadius: 6, background: '#dcfce7', border: '1px solid #86efac', fontSize: 12, color: '#166534', fontWeight: 500 }}
+                        >
+                          💡 実用的
+                        </button>
+                        <button 
+                          onClick={() => sendReaction('surprise', p.id)} 
+                          style={{ padding: '8px 12px', borderRadius: 6, background: 'linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%)', border: 'none', fontSize: 12, color: 'white', fontWeight: 600 }}
+                        >
+                          🎉 サプライズ
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 自分のメモ */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, paddingTop: 12, borderTop: '1px solid #e5e7eb' }}>
+              <h3 style={{ fontSize: 14, margin: 0, color: 'var(--text-muted)' }}>📝 自分のメモ</h3>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <input 
+                  value={note} 
+                  onChange={(e) => setNote(e.target.value)} 
+                  placeholder="質問・メモを記録" 
+                  className="input-field"
+                  style={{ flex: 1 }}
+                />
+                <button 
+                  onClick={submitNote} 
+                  disabled={!note} 
+                  style={{ padding: '10px 16px', borderRadius: 8, background: 'linear-gradient(90deg, #9810fa 0%, #e60076 100%)', color: 'white', border: 'none', fontSize: 13, fontWeight: 600, opacity: !note ? 0.5 : 1 }}
+                >
+                  投稿
+                </button>
+              </div>
+            </div>
+
+            {/* みんなの回答 */}
+            {answers.length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <h3 style={{ fontSize: 14, margin: 0, color: 'var(--text-muted)' }}>💬 みんなの回答</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  {answers.map((a) => (
+                    <div key={a.id} style={{ padding: '8px 12px', background: 'white', borderRadius: 6, border: '1px solid var(--card-border)', fontSize: 13 }}>
+                      {a.text}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* メモ一覧 */}
+            {notes.length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <h3 style={{ fontSize: 14, margin: 0, color: 'var(--text-muted)' }}>📌 メモ</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  {notes.map((n) => (
+                    <div key={n.id} style={{ padding: '8px 12px', background: '#fffbeb', borderRadius: 6, border: '1px solid #fde68a', fontSize: 13 }}>
+                      {n.message}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'yononaka-v2';
+const CACHE_NAME = 'yononaka-v3';
 const ASSETS = ['/manifest.json'];
 
 self.addEventListener('install', (event) => {
@@ -13,6 +13,10 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const req = event.request;
+  // 非GETはキャッシュしない
+  if (req.method !== 'GET') {
+    return;
+  }
   const isNavigation = req.mode === 'navigate' || (req.method === 'GET' && req.headers.get('accept')?.includes('text/html'));
   if (isNavigation) {
     // HTML はネットワーク優先（遷移のスタックを回避）
