@@ -7,6 +7,7 @@ import Link from 'next/link';
 export const dynamic = 'force-dynamic';
 
 export default function JoinPage() {
+  type GameRow = { id: string };
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
@@ -27,7 +28,9 @@ export default function JoinPage() {
       return; 
     }
     const supabase = getSupabase();
-    const { data: game } = await supabase.rpc('get_game_by_code', { p_code: code.toUpperCase() }).single();
+    const { data: game } = await supabase
+      .rpc('get_game_by_code', { p_code: code.toUpperCase() })
+      .single<GameRow>();
     if (!game) { setMessage('ルームが見つかりません'); return; }
     const { data: me } = await supabase.auth.getUser();
     const { error } = await supabase.from('players').insert({ game_id: game.id, user_id: me.user?.id, name, role: 'player' });
