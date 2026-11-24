@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 
 export async function POST(req: NextRequest) {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     return NextResponse.json({ error: 'Supabase env not set' }, { status: 500 });
+  }
+  // The player's own session token; the Edge Function checks who is sending the reaction
+  const authorization = req.headers.get('authorization');
+  if (!authorization?.startsWith('Bearer ')) {
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
   const body = await req.json();
   const { gameId, round, fromPlayerId, toPlayerId, kind } = body as {
@@ -16,16 +20,15 @@ export async function POST(req: NextRequest) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`
+      'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      'Authorization': authorization
     },
     body: JSON.stringify({ gameId, round, fromPlayerId, toPlayerId, kind })
   });
 
+  const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    return NextResponse.json({ error: 'edge function failed' }, { status: 500 });
+    return NextResponse.json({ error: data?.error ?? 'edge function failed' }, { status: res.status });
   }
-  const data = await res.json();
   return NextResponse.json(data);
 }
-
-

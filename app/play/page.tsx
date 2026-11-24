@@ -91,9 +91,14 @@ function PlayPageInner() {
 
   async function sendReaction(kind: 'unique'|'practical'|'surprise', toPlayerId: string) {
     if (!me || !game) return;
+    const { data: { session } } = await getSupabase().auth.getSession();
+    if (!session) {
+      alert('ログイン状態を確認できませんでした。ページを再読み込みしてください');
+      return;
+    }
     const res = await fetch('/api/reaction', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
       body: JSON.stringify({ gameId: game.id, round: game.round, fromPlayerId: me.id, toPlayerId, kind })
     });
     if (!res.ok) {
